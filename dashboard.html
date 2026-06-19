@@ -173,6 +173,7 @@
                 <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Données du certificat</h3>
                 <form id="gen-form">
                   <div class="grid2">
+                    <div class="field"><label>Bureau</label><select id="g-office"><option value="athenes">Athènes (Grèce)</option><option value="tunis">Tunis (Tunisie)</option></select></div>
                     <div class="field"><label>Numéro de certificat</label><input id="g-num" required></div>
                     <div class="field"><label>Nom du navire</label><input id="g-ship" required placeholder="Ex : MV Carthage"></div>
                     <div class="field"><label>Date d'inspection</label><input id="g-insp" type="date" required></div>
@@ -261,7 +262,7 @@
 <script>
   const AUTH_KEY='pcp_auth',CERT_KEY='pcp_certs',SET_KEY='pcp_settings',SESSION='pcp_session';
   const $=id=>document.getElementById(id);
-  const getAuth=()=>{try{return JSON.parse(localStorage.getItem(AUTH_KEY))||{user:'admin',pass:'pcp2026'}}catch(e){return{user:'admin',pass:'pcp2026'}}};
+  const getAuth=()=>{try{return JSON.parse(localStorage.getItem(AUTH_KEY))||{user:'admin',pass:'51444901'}}catch(e){return{user:'admin',pass:'51444901'}}};
   const DEF_SET={inspector:'Rafik Abdel Razak',prefix:'PCP-2026-',validity:12,domain:''};
   const b64e=str=>btoa(unescape(encodeURIComponent(str)));
   const getSet=()=>{let s={};try{s=JSON.parse(localStorage.getItem(SET_KEY))||{}}catch(e){}return Object.assign({},DEF_SET,s)};
@@ -330,19 +331,23 @@
   function nextNum(){const s=getSet();const n=getCerts().length+1;return s.prefix+String(n).padStart(4,'0');}
   function prefillGen(){
     const s=getSet();const today=new Date();const exp=new Date();exp.setMonth(exp.getMonth()+(+s.validity||12));
-    $('g-num').value=nextNum();$('g-by').value=s.inspector;
+    $('g-num').value=nextNum();
+    $('g-by').value = ($('g-office').value==='tunis') ? 'Rafik Abdel Razak' : '';
     $('g-insp').value=today.toISOString().slice(0,10);$('g-exp').value=exp.toISOString().slice(0,10);
   }
+  document.getElementById('g-office').addEventListener('change',function(){
+    $('g-by').value = (this.value==='tunis') ? 'Rafik Abdel Razak' : '';
+  });
   $('gen-form').addEventListener('submit',e=>{
     e.preventDefault();
     const id=randId();const s=getSet();
     const cert={id,certNumber:$('g-num').value.trim(),shipName:$('g-ship').value.trim(),
       inspectionDate:$('g-insp').value,expiryDate:$('g-exp').value,equipmentType:$('g-type').value,
       inspector:$('g-by').value.trim(),client:$('g-client').value.trim(),serial:$('g-serial').value.trim(),
-      capacity:$('g-capacity').value.trim(),stamp:$('g-stamp').checked,createdAt:new Date().toISOString()};
+      capacity:$('g-capacity').value.trim(),office:$('g-office').value,stamp:$('g-stamp').checked,createdAt:new Date().toISOString()};
     const list=getCerts();list.unshift(cert);setCerts(list);
     // Données encodées dans le QR -> vérifiable par tout le monde, sans serveur
-    const payload={n:cert.certNumber,s:cert.shipName,i:cert.inspectionDate,e:cert.expiryDate,t:cert.equipmentType,b:cert.inspector,cl:cert.client,sr:cert.serial,cp:cert.capacity,id:cert.id};
+    const payload={n:cert.certNumber,s:cert.shipName,i:cert.inspectionDate,e:cert.expiryDate,t:cert.equipmentType,b:cert.inspector,cl:cert.client,sr:cert.serial,cp:cert.capacity,o:cert.office,id:cert.id};
     const d=b64e(JSON.stringify(payload));
     const base=(s.domain&&/^https?:/i.test(s.domain))?(s.domain.replace(/\/$/,'')+'/verify.html'):new URL('verify.html',location.href).href;
     const url=base+'?d='+encodeURIComponent(d)+'&id='+id;

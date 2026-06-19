@@ -107,8 +107,8 @@
       <h2>✓ CERTIFICAT ORIGINAL</h2>
       <p class="sub">Document authentique généré par PCP CONTRÔLE.</p>
       <div class="rows" id="rows"></div>
-      <img class="stamp" src="cachet.png" alt="Cachet PCP Contrôle" onerror="this.style.display='none'">
-      <div class="muted">Cachet officiel — Bureau de contrôle PCP, Tunis.</div>
+      <img class="stamp" id="stampImg" src="cachet-athenes.png" alt="Cachet PCP Contrôle" onerror="this.style.display='none'">
+      <div class="muted" id="stampCap">Cachet officiel — PCP Contrôle.</div>
     </div>
 
     <!-- INVALID -->
@@ -180,6 +180,10 @@
       ['Statut', expired?'<span class="status-ok status-exp">EXPIRÉ</span>':'<span class="status-ok">VALIDE</span>']
     );
     $('rows').innerHTML=rows.map(r=>`<div class="row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('');
+    const tunis = (cert.office==='tunis');
+    $('stampImg').src = tunis ? 'cachet-tunis.png' : 'cachet-athenes.png';
+    $('stampCap').textContent = tunis ? 'Cachet officiel — PCP Contrôle, Tunis · +216 51 444 825'
+                                      : 'Cachet officiel — PCP Contrôle, Athènes · +33 5 58 64 54';
     $('result').style.display='block';
   }
 
@@ -194,7 +198,7 @@
   if(d){
     try{
       const p=JSON.parse(b64d(decodeURIComponent(d)));
-      const cert={certNumber:p.n,shipName:p.s,inspectionDate:p.i,expiryDate:p.e,equipmentType:p.t,inspector:p.b,client:p.cl,serial:p.sr,capacity:p.cp,id:p.id};
+      const cert={certNumber:p.n,shipName:p.s,inspectionDate:p.i,expiryDate:p.e,equipmentType:p.t,inspector:p.b,client:p.cl,serial:p.sr,capacity:p.cp,office:p.o,id:p.id};
       $('cid').value=cert.certNumber||cert.id||''; startScan(null,cert);
     }catch(e){ $('lookup').style.display='none'; $('invalid').style.display='block'; }
   } else if(q){ $('cid').value=q; startScan(q); }
