@@ -126,8 +126,7 @@
       <div class="nav-links" id="menu">
         <a href="#services">Services</a>
         <a href="#confiance">À propos</a>
-        <a href="verify.html">Vérifier un certificat</a>
-        <a href="dashboard.html" class="btn btn-ghost">Espace Admin</a>
+        <a href="#contact-foot">Contact</a>
       </div>
       <button class="menu-toggle" id="toggle">☰</button>
     </nav>
@@ -148,28 +147,11 @@
     <span class="badge"><span class="dot"></span> Certification maritime internationale</span>
     <h1>PCP CONTRÔLE</h1>
     <p class="tagline">Inspection <b>•</b> Certification <b>•</b> Conformité Maritime</p>
-    <div class="hero-cta">
-      <a href="verify.html" class="btn btn-gold"><svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Vérifier un certificat</a>
-      <a href="dashboard.html" class="btn btn-ghost">Espace Admin</a>
-    </div>
   </div>
   <div class="dots" id="dots"></div>
   <span class="scroll-ind">DÉFILER</span>
 </section>
 
-<!-- VERIFY STRIP -->
-<div class="wrap">
-  <div class="verify-strip">
-    <div>
-      <h3>Vérifiez l'authenticité d'un certificat</h3>
-      <p>Saisissez le numéro de certificat ou scannez le QR code du document.</p>
-    </div>
-    <form class="verify-form" onsubmit="event.preventDefault();var v=document.getElementById('vid').value.trim();if(v)location.href='verify.html?id='+encodeURIComponent(v);">
-      <input id="vid" type="text" placeholder="N° de certificat (ex: A1B2C3)" />
-      <button class="btn btn-gold" type="submit">Vérifier</button>
-    </form>
-  </div>
-</div>
 
 <!-- SERVICES -->
 <section id="services">
@@ -200,13 +182,18 @@
   </div>
 </section>
 
-<footer>
+<footer id="contact-foot">
   <div class="wrap">
     <div class="foot">
       <div class="brand"><span class="seal"><svg><use href="#ic-anchor"/></svg></span><span class="txt"><b>PCP CONTRÔLE</b><span>BUREAU DE CONTRÔLE · TUNIS</span></span></div>
       <span>Inspection · Certification · Conformité Maritime</span>
-      <span>© 2026 PCP Contrôle · <a href="dashboard.html">Admin</a> · <a href="verify.html">Vérifier</a></span>
     </div>
+    <div style="text-align:center;margin-top:22px;font-size:.78rem;color:#7e93ad;letter-spacing:.3px">
+      <a href="verify.html" style="color:#aebfd4;margin:0 8px">Vérifier un certificat</a> ·
+      <a href="dashboard.html" style="color:#aebfd4;margin:0 8px">Tableau de bord</a> ·
+      <a href="dashboard.html" style="color:#aebfd4;margin:0 8px">Espace Admin</a>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:.78rem;color:#6b7f97">© 2026 PCP Contrôle. Tous droits réservés.</div>
   </div>
 </footer>
 

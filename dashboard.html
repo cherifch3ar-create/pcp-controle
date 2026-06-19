@@ -185,6 +185,9 @@
                       </select>
                     </div>
                     <div class="field"><label>Inspecteur</label><input id="g-by" required></div>
+                    <div class="field"><label>Client / Propriétaire</label><input id="g-client" placeholder="Ex : Armement Carthage"></div>
+                    <div class="field"><label>Marque & N° de série</label><input id="g-serial" placeholder="Ex : KONE / SN-12345"></div>
+                    <div class="field"><label>Capacité / Charge</label><input id="g-capacity" placeholder="Ex : 1000 kg / 8 pers."></div>
                   </div>
                   <div class="toggle"><input type="checkbox" id="g-stamp" checked><label for="g-stamp" style="margin:0;font-weight:600">Apposer le cachet PCP Contrôle</label></div>
                   <button class="btn btn-gold" type="submit" style="margin-top:8px">🔒 Générer QR Code Sécurisé</button>
@@ -335,10 +338,11 @@
     const id=randId();const s=getSet();
     const cert={id,certNumber:$('g-num').value.trim(),shipName:$('g-ship').value.trim(),
       inspectionDate:$('g-insp').value,expiryDate:$('g-exp').value,equipmentType:$('g-type').value,
-      inspector:$('g-by').value.trim(),stamp:$('g-stamp').checked,createdAt:new Date().toISOString()};
+      inspector:$('g-by').value.trim(),client:$('g-client').value.trim(),serial:$('g-serial').value.trim(),
+      capacity:$('g-capacity').value.trim(),stamp:$('g-stamp').checked,createdAt:new Date().toISOString()};
     const list=getCerts();list.unshift(cert);setCerts(list);
     // Données encodées dans le QR -> vérifiable par tout le monde, sans serveur
-    const payload={n:cert.certNumber,s:cert.shipName,i:cert.inspectionDate,e:cert.expiryDate,t:cert.equipmentType,b:cert.inspector,id:cert.id};
+    const payload={n:cert.certNumber,s:cert.shipName,i:cert.inspectionDate,e:cert.expiryDate,t:cert.equipmentType,b:cert.inspector,cl:cert.client,sr:cert.serial,cp:cert.capacity,id:cert.id};
     const d=b64e(JSON.stringify(payload));
     const base=(s.domain&&/^https?:/i.test(s.domain))?(s.domain.replace(/\/$/,'')+'/verify.html'):new URL('verify.html',location.href).href;
     const url=base+'?d='+encodeURIComponent(d)+'&id='+id;

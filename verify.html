@@ -168,12 +168,17 @@
     const rows=[
       ['Numéro de certificat', cert.certNumber||cert.id],
       ['Nom du navire', cert.shipName||'—'],
-      ["Type d'équipement", cert.equipmentType||'—'],
+      ["Type d'équipement", cert.equipmentType||'—']
+    ];
+    if(cert.client) rows.push(['Client / Propriétaire', cert.client]);
+    if(cert.serial) rows.push(['Marque & N° de série', cert.serial]);
+    if(cert.capacity) rows.push(['Capacité / Charge', cert.capacity]);
+    rows.push(
       ["Date d'inspection", fmt(cert.inspectionDate)],
       ["Date d'expiration", fmt(cert.expiryDate)],
       ['Inspecteur', cert.inspector||'—'],
       ['Statut', expired?'<span class="status-ok status-exp">EXPIRÉ</span>':'<span class="status-ok">VALIDE</span>']
-    ];
+    );
     $('rows').innerHTML=rows.map(r=>`<div class="row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('');
     $('result').style.display='block';
   }
@@ -189,7 +194,7 @@
   if(d){
     try{
       const p=JSON.parse(b64d(decodeURIComponent(d)));
-      const cert={certNumber:p.n,shipName:p.s,inspectionDate:p.i,expiryDate:p.e,equipmentType:p.t,inspector:p.b,id:p.id};
+      const cert={certNumber:p.n,shipName:p.s,inspectionDate:p.i,expiryDate:p.e,equipmentType:p.t,inspector:p.b,client:p.cl,serial:p.sr,capacity:p.cp,id:p.id};
       $('cid').value=cert.certNumber||cert.id||''; startScan(null,cert);
     }catch(e){ $('lookup').style.display='none'; $('invalid').style.display='block'; }
   } else if(q){ $('cid').value=q; startScan(q); }
