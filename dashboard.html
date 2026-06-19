@@ -7,6 +7,7 @@
 <!-- build:qr-autonome-v2 -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{--navy:#0B2E59;--navy-deep:#071F3D;--navy-soft:#143a6b;--gold:#c9a24b;--green:#1f9d57;--red:#cf3b32;--grey:#f1f4f8;--line:#e3e9f1;--muted:#5b6c82}
   *{margin:0;padding:0;box-sizing:border-box}
@@ -200,8 +201,9 @@
               <div id="qrbox" class="empty-q">Le QR code s'affichera ici après génération.</div>
               <div class="qr-meta" id="o-url"></div>
               <div id="qr-actions" style="display:none">
-                <button class="btn btn-navy btn-sm" id="dlQR">⬇ Télécharger QR</button>
-                <a class="btn btn-ghost btn-sm" id="testLink" target="_blank">🔍 Tester la vérification</a>
+                <button class="btn btn-gold btn-sm" id="dlPDF" style="margin-bottom:6px">📄 Télécharger le certificat (PDF A4)</button><br>
+                <button class="btn btn-navy btn-sm" id="dlQR">⬇ QR seul</button>
+                <a class="btn btn-ghost btn-sm" id="testLink" target="_blank">🔍 Tester</a>
               </div>
               <div class="hint">Le QR encode l'URL de vérification officielle. La vérification fonctionne sur cet appareil ; pour un accès public en ligne, un hébergement est nécessaire.</div>
             </div>
@@ -351,6 +353,7 @@
     const d=b64e(JSON.stringify(payload));
     const base=(s.domain&&/^https?:/i.test(s.domain))?(s.domain.replace(/\/$/,'')+'/verify.html'):new URL('verify.html',location.href).href;
     const url=base+'?d='+encodeURIComponent(d)+'&id='+id;
+    window.lastCert=cert; window.lastUrl=url;
     $('qrbox').className='';$('qrbox').innerHTML='';
     if(typeof QRCode==='undefined'){
       $('qrbox').className='empty-q';
@@ -370,6 +373,84 @@
     const cv=$('qrbox').querySelector('canvas');const img=$('qrbox').querySelector('img');
     const src=cv?cv.toDataURL('image/png'):(img?img.src:null);if(!src)return;
     const a=document.createElement('a');a.href=src;a.download='QR-'+$('o-num').textContent+'.png';a.click();
+  });
+
+  function loadImg(src){return new Promise(r=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});}
+  $('dlPDF').addEventListener('click',async()=>{
+    const c=window.lastCert; if(!c){alert("Génère d'abord un certificat.");return;}
+    if(!window.jspdf){alert('Librairie PDF non chargée — connecte-toi à internet et recharge.');return;}
+    const {jsPDF}=window.jspdf; const doc=new jsPDF({orientation:'landscape',unit:'pt',format:'a4'});
+    const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+    const NAVY=[11,46,89],GOLD=[201,162,75],GREY=[80,90,105],GREEN=[31,115,46],RED=[200,40,30];
+    const tunis=(c.office==='tunis');
+    const loc1=tunis?'TUNIS, TUNISIE':'ATHENA, GRÈCE';
+    const tel=tunis?'TÉL. : +216 51 444 825':'TÉL. : +33 5 58 64 54';
+    const adresse=tunis?'Tunis, Tunisie':'Athènes, Grèce';
+    const [logo,cachet]=await Promise.all([loadImg('logo-pcp.png'),loadImg(tunis?'cachet-tunis.png':'cachet-athenes.png')]);
+    const qrCv=$('qrbox').querySelector('canvas'); const qrData=qrCv?qrCv.toDataURL('image/png'):null;
+    doc.setFillColor(255,255,255);doc.rect(0,0,W,H,'F');
+    doc.setDrawColor(...NAVY);doc.setLineWidth(3);doc.rect(12,12,W-24,H-24);
+    doc.setDrawColor(...GOLD);doc.setLineWidth(1);doc.rect(18,18,W-36,H-36);
+    doc.setFillColor(...GOLD);const s=42;
+    doc.triangle(12,12,12+s,12,12,12+s,'F');doc.triangle(W-12,12,W-12-s,12,W-12,12+s,'F');
+    doc.triangle(12,H-12,12+s,H-12,12,H-12-s,'F');doc.triangle(W-12,H-12,W-12-s,H-12,W-12,H-12-s,'F');
+    if(logo)doc.addImage(logo,'PNG',40,28,150,76);
+    doc.setDrawColor(200,210,220);doc.setLineWidth(1);doc.line(212,30,212,138);
+    const cx=486;
+    doc.setTextColor(...NAVY);doc.setFont('helvetica','bold');doc.setFontSize(23);doc.text('CERTIFICAT DE CONFORMITÉ',cx,62,{align:'center'});
+    doc.setFontSize(15);doc.text('PCP CONTRÔLE',cx,82,{align:'center'});
+    doc.setTextColor(...GOLD);doc.setFontSize(9.5);doc.text('INSPECTION  •  CERTIFICATION  •  CONTRÔLE TECHNIQUE',cx,98,{align:'center'});
+    doc.setTextColor(...NAVY);doc.setFontSize(11);doc.text(loc1,cx,116,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(10);doc.text(tel,cx,130,{align:'center'});
+    doc.setFillColor(...NAVY);doc.rect(636,98,40,20,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text('N°',656,112,{align:'center'});
+    doc.setDrawColor(...NAVY);doc.setLineWidth(1.2);doc.rect(680,98,124,20);doc.setTextColor(...NAVY);doc.setFontSize(12);doc.text(c.certNumber,742,112,{align:'center'});
+    if(qrData){doc.addImage(qrData,'PNG',748,24,58,58);doc.setTextColor(...GREY);doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.text('Vérifier en ligne',777,90,{align:'center'});}
+    doc.setTextColor(...GREY);doc.setFontSize(10);
+    doc.text("Nous soussignés, PCP CONTRÔLE, organisme indépendant de contrôle et d'inspection technique,",W/2,158,{align:'center'});
+    doc.text("certifions que l'équipement désigné ci-dessous a été inspecté et est déclaré :",W/2,172,{align:'center'});
+    function bar(x,y,w,t){doc.setFillColor(...NAVY);doc.rect(x,y,w,18,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(10.5);doc.text(t,x+w/2,y+13,{align:'center'});}
+    function field(x,y,label,val,xend){doc.setTextColor(...NAVY);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(label,x,y);const lw=doc.getTextWidth(label)+6;doc.setDrawColor(150,160,175);doc.setLineWidth(0.7);doc.line(x+lw,y+2,xend,y+2);if(val){doc.setTextColor(25,30,50);doc.setFont('helvetica','normal');doc.text(String(val),x+lw+3,y);}}
+    bar(40,190,370,'CLIENT');
+    field(40,222,'Nom / Société :',c.client||'',406);
+    field(40,246,'Adresse :',adresse,406);
+    bar(40,270,370,'ÉQUIPEMENT CONTRÔLÉ');
+    field(40,302,'Type :',c.equipmentType||'',406);
+    field(40,326,'Marque / N° série :',c.serial||'',406);
+    field(40,350,'Capacité / Charge :',c.capacity||'',406);
+    field(40,374,'Navire / Lieu :',c.shipName||'',406);
+    bar(432,190,372,"RÉSULTAT DE L'INSPECTION");
+    doc.setTextColor(...GREY);doc.setFont('helvetica','normal');doc.setFontSize(9.5);
+    doc.text("Après vérification technique, contrôle visuel et essais fonctionnels réalisés",618,220,{align:'center'});
+    doc.text("conformément aux exigences applicables, l'équipement est déclaré :",618,233,{align:'center'});
+    doc.setDrawColor(...GREEN);doc.setLineWidth(2);doc.rect(472,250,15,15);
+    doc.setLineWidth(2.4);doc.line(475,258,479,263);doc.line(479,263,486,251);
+    doc.setTextColor(...GREEN);doc.setFont('helvetica','bold');doc.setFontSize(13);doc.text('CONFORME',494,263);
+    doc.setDrawColor(...RED);doc.setLineWidth(2);doc.rect(636,250,15,15);
+    doc.setTextColor(...RED);doc.text('NON CONFORME',658,263);
+    doc.setTextColor(...NAVY);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('Observations :',432,292);
+    const ow=doc.getTextWidth('Observations :')+6;doc.setDrawColor(150,160,175);doc.setLineWidth(0.7);
+    doc.setTextColor(25,30,50);doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.text('Aucune non-conformité relevée.',432+ow+3,292);
+    doc.line(432+ow,294,804,294);doc.line(432,312,804,312);doc.line(432,330,804,330);doc.line(432,348,804,348);
+    doc.setDrawColor(...NAVY);doc.setLineWidth(1.2);doc.rect(40,418,168,54);
+    doc.setTextColor(...NAVY);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text('DATE DU CONTRÔLE',124,436,{align:'center'});
+    doc.setTextColor(25,30,50);doc.setFontSize(12);doc.text(fmt(c.inspectionDate),124,460,{align:'center'});
+    doc.setDrawColor(...NAVY);doc.setLineWidth(1.2);doc.rect(216,418,168,54);
+    doc.setTextColor(...NAVY);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text('VALIDITÉ DU CERTIFICAT',300,436,{align:'center'});
+    doc.setTextColor(25,30,50);doc.setFontSize(12);doc.text(fmt(c.expiryDate),300,460,{align:'center'});
+    bar(432,418,300,'INSPECTEUR PCP CONTRÔLE');
+    field(432,450,'Nom :',c.inspector||'',692);
+    field(432,474,'Signature :','',628);
+    if(cachet)doc.addImage(cachet,'PNG',700,418,78,78);
+    doc.setDrawColor(210,215,222);doc.setLineWidth(0.7);doc.line(40,500,802,500);
+    if(logo)doc.addImage(logo,'PNG',44,506,78,40);
+    doc.setTextColor(...NAVY);doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.text("DOMAINES D'INTERVENTION",300,514);
+    doc.setTextColor(...GREY);doc.setFont('helvetica','normal');doc.setFontSize(8.2);
+    const dom=[['• Contrôle maritime','• Certification de conformité','• Inspection des ascenseurs'],['• Monte-charges','• Monte-plats','• Équipements de levage maritimes']];
+    dom.forEach((row,r)=>row.forEach((t,ci)=>doc.text(t,300+ci*150,528+r*13)));
+    doc.setTextColor(...GREY);doc.setFont('helvetica','italic');doc.setFontSize(7.6);
+    doc.text("Ce certificat atteste uniquement des constatations réalisées à la date de l'inspection",W/2,560,{align:'center'});
+    doc.text("et ne dispense pas le propriétaire de maintenir l'équipement en bon état de fonctionnement.",W/2,570,{align:'center'});
+    doc.save('Certificat-'+c.certNumber+'.pdf');
   });
 
   // EXPORTS
