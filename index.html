@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCP CONTRÔLE — Inspection · Certification · Conformité Maritime</title>
+<meta name="description" content="PCP CONTRÔLE — Bureau de contrôle maritime : inspection, certification de conformité, ascenseurs, monte-charges, monte-plats et équipements de levage maritimes.">
+<style>
+  :root{
+    --navy:#0B2E59; --navy-deep:#071F3D; --navy-soft:#143a6b;
+    --gold:#c9a24b; --blue:#3d7bd4; --grey:#f1f4f8; --line:#e3e9f1;
+    --text:#0B2E59; --muted:#5b6c82; --white:#fff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--text);background:var(--white);line-height:1.65;overflow-x:hidden}
+  a{text-decoration:none;color:inherit}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:8px;font-weight:700;font-size:1rem;cursor:pointer;border:none;transition:.25s;letter-spacing:.3px}
+  .btn-gold{background:linear-gradient(135deg,#d8b258,#b98e34);color:#1b1402;box-shadow:0 10px 30px rgba(201,162,75,.35)}
+  .btn-gold:hover{transform:translateY(-3px);box-shadow:0 16px 38px rgba(201,162,75,.45)}
+  .btn-ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.35);color:#fff;backdrop-filter:blur(4px)}
+  .btn-ghost:hover{background:rgba(255,255,255,.18)}
+  .btn-navy{background:var(--navy);color:#fff}
+  .btn-navy:hover{background:var(--navy-deep)}
+  svg.anchor{fill:currentColor}
+
+  /* HEADER */
+  header{position:fixed;top:0;left:0;right:0;z-index:60;transition:.3s}
+  header.scrolled{background:rgba(11,46,89,.95);backdrop-filter:blur(10px);box-shadow:0 4px 24px rgba(0,0,0,.25)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:84px}
+  .brand{display:flex;align-items:center;gap:12px;color:#fff}
+  .brand .seal{width:42px;height:42px;border-radius:50%;border:2px solid rgba(255,255,255,.6);display:grid;place-items:center}
+  .brand .seal svg{width:22px;height:22px;fill:#fff}
+  .brand .txt b{display:block;font-size:1.2rem;font-weight:800;letter-spacing:1.5px;line-height:1}
+  .brand .txt span{font-size:.62rem;letter-spacing:3px;color:rgba(255,255,255,.75)}
+  .nav-links{display:flex;gap:28px;align-items:center}
+  .nav-links a{color:rgba(255,255,255,.88);font-weight:500;font-size:.95rem}
+  .nav-links a:hover{color:#fff}
+  .nav-links .btn{padding:11px 22px;font-size:.92rem}
+  .menu-toggle{display:none;background:none;border:none;color:#fff;font-size:1.7rem;cursor:pointer}
+
+  /* HERO / COVER */
+  .hero{position:relative;height:100vh;min-height:640px;display:flex;align-items:center;overflow:hidden;background:var(--navy-deep)}
+  .slides{position:absolute;inset:0;z-index:0}
+  .slide{position:absolute;inset:0;opacity:0;transition:opacity 1.6s ease;background-size:cover;background-position:center;will-change:transform,opacity}
+  .slide.active{opacity:1;animation:kenburns 6.5s ease-out forwards}
+  @keyframes kenburns{0%{transform:scale(1.08) translate(0,0)}100%{transform:scale(1.20) translate(-1.5%,-1%)}}
+  .hero .overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(120deg,rgba(7,31,61,.92) 0%,rgba(11,46,89,.78) 45%,rgba(11,46,89,.45) 100%)}
+  #particles{position:absolute;inset:0;z-index:2;pointer-events:none}
+  .hero .wrap{position:relative;z-index:3;color:#fff}
+  .hero .badge{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.3);border-radius:50px;padding:8px 18px;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:#dbe4f2;margin-bottom:26px;background:rgba(255,255,255,.06)}
+  .hero .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+  .hero h1{font-size:clamp(2.8rem,7vw,5.6rem);font-weight:800;letter-spacing:3px;line-height:1;text-shadow:0 4px 30px rgba(0,0,0,.4)}
+  .hero .tagline{font-size:clamp(1.05rem,2.4vw,1.5rem);color:#dbe4f2;margin:20px 0 38px;letter-spacing:1px;font-weight:300}
+  .hero .tagline b{color:var(--gold);font-weight:600}
+  .hero-cta{display:flex;gap:16px;flex-wrap:wrap}
+  .dots{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:4;display:flex;gap:10px}
+  .dots i{width:32px;height:4px;border-radius:3px;background:rgba(255,255,255,.35);cursor:pointer;transition:.3s}
+  .dots i.on{background:var(--gold);width:46px}
+  .scroll-ind{position:absolute;bottom:26px;right:34px;z-index:4;color:rgba(255,255,255,.7);font-size:.75rem;letter-spacing:2px;writing-mode:vertical-rl;animation:bob 2s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+  /* SECTION */
+  section{padding:96px 0}
+  .head{text-align:center;max-width:62ch;margin:0 auto 54px}
+  .head .tag{color:var(--gold);font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:.8rem}
+  h2{font-size:clamp(1.9rem,3.6vw,2.7rem);font-weight:800;margin:12px 0 14px;letter-spacing:-.3px}
+  .head p{color:var(--muted);font-size:1.08rem}
+
+  /* VERIFY STRIP */
+  .verify-strip{background:linear-gradient(135deg,var(--navy),var(--navy-soft));color:#fff;border-radius:20px;padding:46px;display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;box-shadow:0 30px 60px rgba(11,46,89,.25);margin-top:-150px;position:relative;z-index:5}
+  .verify-strip h3{font-size:1.6rem;margin-bottom:6px}
+  .verify-strip p{color:#cdd9ea}
+  .verify-form{display:flex;gap:10px;flex-wrap:wrap}
+  .verify-form input{padding:15px 18px;border-radius:8px;border:none;font-size:1rem;min-width:220px;font-family:inherit}
+  .verify-form input:focus{outline:2px solid var(--gold)}
+
+  /* SERVICES */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:32px 28px;transition:.25s}
+  .card:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(11,46,89,.12);border-color:var(--navy)}
+  .card .ico{width:56px;height:56px;border-radius:13px;background:var(--grey);display:grid;place-items:center;margin-bottom:20px}
+  .card .ico svg{width:28px;height:28px;stroke:var(--navy);fill:none;stroke-width:1.7}
+  .card h3{font-size:1.18rem;margin-bottom:9px}
+  .card p{color:var(--muted);font-size:.95rem}
+
+  /* TRUST BAND */
+  .band{background:var(--navy);color:#fff;border-radius:0}
+  .band .wrap{display:flex;justify-content:space-around;flex-wrap:wrap;gap:30px;text-align:center}
+  .band .num{font-size:2.7rem;font-weight:800;color:#fff}
+  .band .num .u{color:var(--gold)}
+  .band .lbl{color:#bcccdf;font-size:.92rem;letter-spacing:.5px}
+
+  /* FOOTER */
+  footer{background:var(--navy-deep);color:#aebfd4;padding:46px 0 30px}
+  .foot{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:center;font-size:.9rem}
+  .foot a{color:var(--gold)}
+
+  .reveal{opacity:0;transform:translateY(34px);transition:.7s}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.1s}.reveal.d2{transition-delay:.2s}.reveal.d3{transition-delay:.3s}
+
+  @media(max-width:860px){
+    .nav-links{position:fixed;top:84px;right:0;bottom:0;width:78%;max-width:320px;flex-direction:column;align-items:flex-start;gap:0;padding:24px;background:var(--navy);transform:translateX(100%);transition:.3s}
+    .nav-links.open{transform:translateX(0)}
+    .nav-links a{padding:15px 0;width:100%;border-bottom:1px solid rgba(255,255,255,.12)}
+    .menu-toggle{display:block}
+    .verify-strip{margin-top:-90px;padding:32px}
+  }
+</style>
+</head>
+<body>
+
+<!-- anchor svg symbol -->
+<svg style="display:none"><symbol id="ic-anchor" viewBox="0 0 24 24"><path d="M12 2a2.5 2.5 0 00-1 4.79V9H8v2h3v7.92A7 7 0 014.07 13H6l-3-3-3 3h2.05A9 9 0 0012 22a9 9 0 008.95-9H23l-3-3-3 3h1.93A7 7 0 0113 18.92V11h3V9h-3V6.79A2.5 2.5 0 0012 2z"/></symbol></svg>
+
+<header id="hdr">
+  <div class="wrap">
+    <nav>
+      <a href="index.html" class="brand">
+        <span class="seal"><svg><use href="#ic-anchor"/></svg></span>
+        <span class="txt"><b>PCP CONTRÔLE</b><span>BUREAU DE CONTRÔLE</span></span>
+      </a>
+      <div class="nav-links" id="menu">
+        <a href="#services">Services</a>
+        <a href="#confiance">À propos</a>
+        <a href="verify.html">Vérifier un certificat</a>
+        <a href="dashboard.html" class="btn btn-ghost">Espace Admin</a>
+      </div>
+      <button class="menu-toggle" id="toggle">☰</button>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="slides" id="slides">
+    <div class="slide active" style="background-image:url('cover-1.jpg')"></div>
+    <div class="slide" style="background-image:url('cover-4.jpg')"></div>
+    <div class="slide" style="background-image:url('cover-2.jpg')"></div>
+    <div class="slide" style="background-image:url('cover-3.jpg')"></div>
+  </div>
+  <div class="overlay"></div>
+  <canvas id="particles"></canvas>
+  <div class="wrap">
+    <span class="badge"><span class="dot"></span> Certification maritime internationale</span>
+    <h1>PCP CONTRÔLE</h1>
+    <p class="tagline">Inspection <b>•</b> Certification <b>•</b> Conformité Maritime</p>
+    <div class="hero-cta">
+      <a href="verify.html" class="btn btn-gold"><svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg> Vérifier un certificat</a>
+      <a href="dashboard.html" class="btn btn-ghost">Espace Admin</a>
+    </div>
+  </div>
+  <div class="dots" id="dots"></div>
+  <span class="scroll-ind">DÉFILER</span>
+</section>
+
+<!-- VERIFY STRIP -->
+<div class="wrap">
+  <div class="verify-strip">
+    <div>
+      <h3>Vérifiez l'authenticité d'un certificat</h3>
+      <p>Saisissez le numéro de certificat ou scannez le QR code du document.</p>
+    </div>
+    <form class="verify-form" onsubmit="event.preventDefault();var v=document.getElementById('vid').value.trim();if(v)location.href='verify.html?id='+encodeURIComponent(v);">
+      <input id="vid" type="text" placeholder="N° de certificat (ex: A1B2C3)" />
+      <button class="btn btn-gold" type="submit">Vérifier</button>
+    </form>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="wrap">
+    <div class="head reveal">
+      <span class="tag">Nos domaines</span>
+      <h2>Un bureau de contrôle maritime complet</h2>
+      <p>De l'inspection des navires à la certification des équipements de levage, PCP Contrôle garantit sécurité et conformité.</p>
+    </div>
+    <div class="grid">
+      <div class="card reveal"><div class="ico"><svg viewBox="0 0 24 24"><path d="M2 20h20M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg></div><h3>Contrôle maritime</h3><p>Inspection de navires, coques, ballasts et équipements de bord selon les normes de classe.</p></div>
+      <div class="card reveal d1"><div class="ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Certification de conformité</h3><p>Délivrance de certificats de conformité sécurisés et vérifiables par QR code.</p></div>
+      <div class="card reveal d2"><div class="ico"><svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="1"/><path d="M9 7l3-2 3 2M9 17l3 2 3-2"/></svg></div><h3>Inspection des ascenseurs</h3><p>Vérification réglementaire et mise en conformité des ascenseurs à bord et à terre.</p></div>
+      <div class="card reveal"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 7h18v13H3z"/><path d="M3 7l3-4h12l3 4M12 11v5"/></svg></div><h3>Monte-charges</h3><p>Contrôle des monte-charges industriels et maritimes, sécurité et performance.</p></div>
+      <div class="card reveal d1"><div class="ico"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 4v16M4 12h4"/></svg></div><h3>Monte-plats</h3><p>Inspection et certification des monte-plats pour la restauration et l'hôtellerie.</p></div>
+      <div class="card reveal d2"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div><h3>Équipements de levage maritimes</h3><p>Grues, treuils, palans et apparaux de levage : essais de charge et certification.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAND -->
+<section class="band">
+  <div class="wrap">
+    <div class="reveal"><div class="num" data-count="15" data-suffix="+"><span class="u">+</span></div><div class="lbl">Ans d'expérience</div></div>
+    <div class="reveal d1"><div class="num" data-count="1200" data-suffix="+">0</div><div class="lbl">Certificats délivrés</div></div>
+    <div class="reveal d2"><div class="num">24/7</div><div class="lbl">Disponibilité</div></div>
+    <div class="reveal d3"><div class="num" data-count="100" data-suffix="%">0</div><div class="lbl">Vérifiables en ligne</div></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="brand"><span class="seal"><svg><use href="#ic-anchor"/></svg></span><span class="txt"><b>PCP CONTRÔLE</b><span>BUREAU DE CONTRÔLE · TUNIS</span></span></div>
+      <span>Inspection · Certification · Conformité Maritime</span>
+      <span>© 2026 PCP Contrôle · <a href="dashboard.html">Admin</a> · <a href="verify.html">Vérifier</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Header scroll
+  const hdr=document.getElementById('hdr');
+  addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>40));
+  // Menu mobile
+  const tg=document.getElementById('toggle'),mn=document.getElementById('menu');
+  tg.addEventListener('click',()=>mn.classList.toggle('open'));
+  mn.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>mn.classList.remove('open')));
+
+  // SLIDESHOW + Ken Burns + dots
+  const slides=[...document.querySelectorAll('.slide')], dotsBox=document.getElementById('dots');
+  slides.forEach((s,i)=>{const d=document.createElement('i');d.onclick=()=>go(i);dotsBox.appendChild(d);});
+  const dots=[...dotsBox.children]; let cur=0;
+  function go(n){
+    slides[cur].classList.remove('active'); dots[cur].classList.remove('on');
+    cur=(n+slides.length)%slides.length;
+    slides[cur].classList.add('active'); dots[cur].classList.add('on');
+  }
+  dots[0].classList.add('on');
+  setInterval(()=>go(cur+1),5000);
+
+  // PARALLAXE
+  addEventListener('scroll',()=>{const y=scrollY;document.getElementById('slides').style.transform='translateY('+(y*0.25)+'px)';},{passive:true});
+
+  // PARTICULES
+  const cv=document.getElementById('particles'),ctx=cv.getContext('2d');let W,H,ps=[];
+  function rs(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;}
+  rs();addEventListener('resize',rs);
+  for(let i=0;i<60;i++)ps.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*2+.4,s:Math.random()*.4+.1,a:Math.random()*.5+.2});
+  (function draw(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{p.y-=p.s;if(p.y<0){p.y=H;p.x=Math.random()*W;}ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fillStyle='rgba(201,162,75,'+p.a+')';ctx.fill();});requestAnimationFrame(draw);})();
+
+  // REVEAL + counters
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');const n=e.target.querySelector('[data-count]');if(n&&!n.done){n.done=1;cnt(n);}io.unobserve(e.target);}}),{threshold:.16});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  function cnt(el){const t=+el.dataset.count,sf=el.dataset.suffix||'',d=1500,st=performance.now();(function tk(now){const p=Math.min((now-st)/d,1);el.textContent=Math.floor((1-Math.pow(1-p,3))*t)+sf;if(p<1)requestAnimationFrame(tk);})(performance.now());}
+</script>
+</body>
+</html>

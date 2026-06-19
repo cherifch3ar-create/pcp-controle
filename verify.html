@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vérification de certificat — PCP CONTRÔLE</title>
+<style>
+  :root{--navy:#0B2E59;--navy-deep:#071F3D;--navy-soft:#143a6b;--gold:#c9a24b;--green:#1f9d57;--red:#cf3b32;--grey:#f1f4f8;--line:#e3e9f1;--muted:#5b6c82}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',system-ui,sans-serif;color:#0B2E59;line-height:1.6;
+    min-height:100vh;background:linear-gradient(160deg,var(--navy-deep),var(--navy) 55%,var(--navy-soft));
+    display:flex;flex-direction:column;align-items:center;padding:30px 18px 50px}
+  a{color:inherit;text-decoration:none}
+  .brand{display:flex;align-items:center;gap:12px;color:#fff;margin:6px 0 26px}
+  .brand .seal{width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.6);display:grid;place-items:center}
+  .brand .seal svg{width:23px;height:23px;fill:#fff}
+  .brand b{font-size:1.2rem;font-weight:800;letter-spacing:1.5px;display:block;line-height:1}
+  .brand span{font-size:.62rem;letter-spacing:3px;color:rgba(255,255,255,.75)}
+  .panel{background:#fff;border-radius:20px;width:100%;max-width:520px;box-shadow:0 30px 70px rgba(0,0,0,.35);overflow:hidden}
+  .panel .topbar{height:6px;background:linear-gradient(90deg,var(--gold),#e7cd8c,var(--gold))}
+  .pad{padding:34px 30px}
+
+  /* INPUT STATE */
+  .lookup h1{font-size:1.4rem;text-align:center;margin-bottom:6px}
+  .lookup p{text-align:center;color:var(--muted);margin-bottom:22px;font-size:.95rem}
+  .lookup input{width:100%;padding:15px 16px;border:1px solid var(--line);border-radius:9px;font-size:1.05rem;text-align:center;letter-spacing:2px;font-family:inherit}
+  .lookup input:focus{outline:2px solid var(--navy)}
+  .btn{width:100%;margin-top:14px;padding:15px;border:none;border-radius:9px;font-weight:700;font-size:1rem;cursor:pointer;background:var(--navy);color:#fff;transition:.2s}
+  .btn:hover{background:var(--navy-deep)}
+
+  /* SCAN STATE */
+  .scan{display:none;text-align:center}
+  .ring{width:120px;height:120px;margin:6px auto 22px;position:relative}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-size:1.6rem;font-weight:800;color:var(--navy)}
+  .scan h2{font-size:1.15rem;margin-bottom:4px}
+  .scan .cur{color:var(--gold);font-weight:700;min-height:1.5em;margin-bottom:20px}
+  .steps{text-align:left;max-width:340px;margin:0 auto}
+  .step{display:flex;align-items:center;gap:12px;padding:9px 0;color:#9aa7b8;font-size:.95rem;transition:.3s}
+  .step .mk{width:24px;height:24px;border-radius:50%;border:2px solid #d3dbe6;display:grid;place-items:center;flex-shrink:0;font-size:.8rem;transition:.3s}
+  .step.active{color:var(--navy);font-weight:600}
+  .step.active .mk{border-color:var(--gold)}
+  .step.done{color:var(--navy)}
+  .step.done .mk{background:var(--green);border-color:var(--green);color:#fff}
+
+  /* RESULT STATE */
+  .result{display:none;text-align:center;animation:pop .5s ease}
+  @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+  .result .check{width:96px;height:96px;border-radius:50%;background:var(--green);display:grid;place-items:center;margin:0 auto 16px;box-shadow:0 12px 30px rgba(31,157,87,.4);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 12px 30px rgba(31,157,87,.4)}50%{box-shadow:0 12px 44px rgba(31,157,87,.7)}}
+  .result .check svg{width:52px;height:52px;stroke:#fff;stroke-width:3;fill:none}
+  .result h2{font-size:1.5rem;color:var(--green);letter-spacing:1px}
+  .result .sub{color:var(--muted);margin-bottom:22px;font-size:.92rem}
+  .rows{text-align:left;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:22px}
+  .row{display:flex;justify-content:space-between;gap:14px;padding:13px 16px;font-size:.95rem}
+  .row:nth-child(odd){background:var(--grey)}
+  .row .k{color:var(--muted)}
+  .row .v{font-weight:700;text-align:right}
+  .status-ok{display:inline-block;background:var(--green);color:#fff;padding:3px 12px;border-radius:20px;font-size:.82rem;font-weight:700}
+  .status-exp{background:var(--red)}
+  .stamp{margin:6px auto 4px;width:150px;opacity:.96}
+  .muted{color:var(--muted);font-size:.82rem;margin-top:6px}
+  .backlink{color:#cdd9ea;margin-top:24px;font-size:.9rem}
+  .backlink:hover{color:#fff}
+
+  /* INVALID */
+  .invalid{display:none;text-align:center;animation:pop .5s ease}
+  .invalid .x{width:96px;height:96px;border-radius:50%;background:var(--red);display:grid;place-items:center;margin:0 auto 16px;color:#fff;font-size:3rem}
+  .invalid h2{color:var(--red);font-size:1.4rem}
+  .invalid p{color:var(--muted);margin:8px 0 8px}
+</style>
+</head>
+<body>
+<svg style="display:none"><symbol id="ic-anchor" viewBox="0 0 24 24"><path d="M12 2a2.5 2.5 0 00-1 4.79V9H8v2h3v7.92A7 7 0 014.07 13H6l-3-3-3 3h2.05A9 9 0 0012 22a9 9 0 008.95-9H23l-3-3-3 3h1.93A7 7 0 0113 18.92V11h3V9h-3V6.79A2.5 2.5 0 0012 2z"/></symbol></svg>
+
+<a href="index.html" class="brand">
+  <span class="seal"><svg><use href="#ic-anchor"/></svg></span>
+  <span><b>PCP CONTRÔLE</b><span>VÉRIFICATION DE CERTIFICAT</span></span>
+</a>
+
+<div class="panel">
+  <div class="topbar"></div>
+  <div class="pad">
+
+    <!-- LOOKUP -->
+    <div class="lookup" id="lookup">
+      <h1>Vérifier un certificat</h1>
+      <p>Saisissez le numéro de certificat figurant sur le document ou le QR code.</p>
+      <input id="cid" type="text" placeholder="Ex : A1B2C3" autocomplete="off">
+      <button class="btn" id="startBtn">Vérifier l'authenticité</button>
+    </div>
+
+    <!-- SCAN -->
+    <div class="scan" id="scan">
+      <div class="ring">
+        <svg width="120" height="120"><circle cx="60" cy="60" r="52" stroke="#e6ebf3" stroke-width="10" fill="none"/><circle id="prog" cx="60" cy="60" r="52" stroke="#c9a24b" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327"/></svg>
+        <div class="pct" id="pct">0%</div>
+      </div>
+      <h2>Vérification en cours…</h2>
+      <div class="cur" id="curStep">Initialisation…</div>
+      <div class="steps" id="stepList"></div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result" id="result">
+      <div class="check"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></div>
+      <h2>✓ CERTIFICAT ORIGINAL</h2>
+      <p class="sub">Document authentique généré par PCP CONTRÔLE.</p>
+      <div class="rows" id="rows"></div>
+      <img class="stamp" src="cachet.png" alt="Cachet PCP Contrôle" onerror="this.style.display='none'">
+      <div class="muted">Cachet officiel — Bureau de contrôle PCP, Tunis.</div>
+    </div>
+
+    <!-- INVALID -->
+    <div class="invalid" id="invalid">
+      <div class="x">✕</div>
+      <h2>Certificat introuvable</h2>
+      <p>Aucun certificat ne correspond à ce numéro. Vérifiez le numéro saisi ou contactez PCP Contrôle.</p>
+      <button class="btn" onclick="location.href='verify.html'">Réessayer</button>
+    </div>
+
+  </div>
+</div>
+<a href="index.html" class="backlink">← Retour à l'accueil</a>
+
+<script>
+  const CERT_KEY='pcp_certs';
+  const $=id=>document.getElementById(id);
+  function getCerts(){try{return JSON.parse(localStorage.getItem(CERT_KEY))||[]}catch(e){return[]}}
+  function findCert(id){return getCerts().find(c=>(c.id||'').toUpperCase()===id.toUpperCase()||(c.certNumber||'').toUpperCase()===id.toUpperCase());}
+
+  const STEPS=[
+    "Scan du cachet PCP Contrôle",
+    "Vérification du document",
+    "Vérification de la date",
+    "Contrôle de l'authenticité",
+    "Validation du certificat"
+  ];
+  // build step list
+  $('stepList').innerHTML=STEPS.map((s,i)=>`<div class="step" id="st${i}"><span class="mk">${i+1}</span><span>${s}</span></div>`).join('');
+
+  function startScan(id,embedded){
+    $('lookup').style.display='none'; $('scan').style.display='block';
+    const cert=embedded||findCert(id);
+    const DUR=12000, R=52, CIRC=2*Math.PI*R; // ~12s
+    const start=performance.now();
+    function frame(now){
+      const p=Math.min((now-start)/DUR,1);
+      $('pct').textContent=Math.round(p*100)+'%';
+      $('prog').style.strokeDashoffset=CIRC*(1-p);
+      const si=Math.min(STEPS.length-1,Math.floor(p*STEPS.length));
+      for(let i=0;i<STEPS.length;i++){
+        const el=$('st'+i); el.classList.remove('active','done');
+        if(i<si)el.classList.add('done'); else if(i===si)el.classList.add('active');
+      }
+      $('curStep').textContent=STEPS[si]+'…';
+      if(p<1){requestAnimationFrame(frame);}
+      else{ STEPS.forEach((_,i)=>{$('st'+i).classList.remove('active');$('st'+i).classList.add('done');}); finish(cert); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  function fmt(d){ if(!d)return '—'; const x=new Date(d); return isNaN(x)?d:x.toLocaleDateString('fr-FR'); }
+  function finish(cert){
+    $('scan').style.display='none';
+    if(!cert){ $('invalid').style.display='block'; return; }
+    const expired = cert.expiryDate && new Date(cert.expiryDate) < new Date();
+    const rows=[
+      ['Numéro de certificat', cert.certNumber||cert.id],
+      ['Nom du navire', cert.shipName||'—'],
+      ["Type d'équipement", cert.equipmentType||'—'],
+      ["Date d'inspection", fmt(cert.inspectionDate)],
+      ["Date d'expiration", fmt(cert.expiryDate)],
+      ['Inspecteur', cert.inspector||'—'],
+      ['Statut', expired?'<span class="status-ok status-exp">EXPIRÉ</span>':'<span class="status-ok">VALIDE</span>']
+    ];
+    $('rows').innerHTML=rows.map(r=>`<div class="row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('');
+    $('result').style.display='block';
+  }
+
+  // events
+  $('startBtn').addEventListener('click',()=>{const v=$('cid').value.trim();if(v)startScan(v);else $('cid').focus();});
+  $('cid').addEventListener('keydown',e=>{if(e.key==='Enter')$('startBtn').click();});
+
+  // auto depuis l'URL
+  const params=new URLSearchParams(location.search);
+  const d=params.get('d'), q=params.get('id');
+  const b64d=s=>decodeURIComponent(escape(atob(s)));
+  if(d){
+    try{
+      const p=JSON.parse(b64d(decodeURIComponent(d)));
+      const cert={certNumber:p.n,shipName:p.s,inspectionDate:p.i,expiryDate:p.e,equipmentType:p.t,inspector:p.b,id:p.id};
+      $('cid').value=cert.certNumber||cert.id||''; startScan(null,cert);
+    }catch(e){ $('lookup').style.display='none'; $('invalid').style.display='block'; }
+  } else if(q){ $('cid').value=q; startScan(q); }
+</script>
+</body>
+</html>
