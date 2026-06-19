@@ -367,7 +367,7 @@
     $('qr-actions').style.display='block';
     $('testLink').href=url;
     refreshAll();prefillGen();
-    alert('Certificat '+cert.certNumber+' généré ✓\nIdentifiant de vérification : '+id);
+    const h=document.querySelector('.qr-out .hint'); if(h){h.textContent='✓ Certificat '+cert.certNumber+' généré. Télécharge le PDF ou teste la vérification.';h.style.color='#1f9d57';}
   });
   $('dlQR').addEventListener('click',()=>{
     const cv=$('qrbox').querySelector('canvas');const img=$('qrbox').querySelector('img');
